@@ -1,7 +1,9 @@
 //Create variables here
 var dog, happyDog, dogImage, database, foodS, foodStock, DogImage, HappyDogImage;
 var dogFoodCounter,c,foodRemaining;
+var milk;
 var gameState="PLAY";
+var fedTime, lastFed,foodObj,foodLeft;
 
 function preload()
 {
@@ -12,8 +14,10 @@ function preload()
 
 function setup() 
 {
-	createCanvas(500, 500);
-  dog = createSprite(250,250,10,10);
+	createCanvas(1200, 500);
+  foodObj = new Food();
+
+  dog = createSprite(950,250,10,10);
   dog.addImage(dogImage);
   dog.scale=0.4;
 
@@ -21,7 +25,11 @@ function setup()
   foodStock=database.ref("Food");
   foodStock.on("value",readPosition,showError);
 
-  foodS=20;
+  fedTime=database.ref("FeedTime");
+  fedTime.on("value",function(data){
+    lastFed=data.val();
+  });
+
   dogFoodCounter="Food Remaining";
 
   
@@ -33,15 +41,19 @@ function draw()
   background(46,139,87);
   if(gameState==="PLAY")
   {
+    var feedThePetButton = createButton('Click to feed the pet');
+    feedThePetButton.position(650,60);
+
+    var addFoodButton = createButton('Click to add food for the pet');
+    addFoodButton.position(1050,60);
+
+    addFoodButton.mousePressed(addFood);
+    feedThePetButton.mousePressed(feedFood);
+
+    foodObj.display();
 
     if(dogFoodCounter==="Food Remaining"){
-      if(keyWentDown(UP_ARROW))
-      {
-        writeStock(foodS);
-        dog.addImage(happyDog);
-        c=20;
-        foodS--;
-      }
+
     }else {
       gameState="END";
     }
@@ -68,8 +80,14 @@ function draw()
     textSize(20);
     fill("Black");
     if(dogFoodCounter==="Food Remaining"){
-      text("Food Remaining : "+foodRemaining,20,20);
-      text("NOTE : Press UP_ARROW to feed Rocky milk.",20,480);
+      if(lastFed>=12){
+        text("Last Feed : "+ lastFed%12+ " PM",20,20);
+      }else if(lastFed===0){
+        text("Last Feed : 12 AM",20,20);
+      }else{
+        text("Last Feed : "+lastFed+"AM",20,20);
+      }
+      text("NOTE : Press the buttons to feed Rocky milk, and add food for Rocky.",20,480);
     }
 
     if(dogFoodCounter==="Food Over")
@@ -89,7 +107,6 @@ function writeStock(x){
   } else {
     x--;
   }
-  console.log(x);
 
   foodStock.update({
     Food : x 
@@ -99,8 +116,40 @@ function writeStock(x){
 function readPosition(data){
   pos=data.val();
   foodRemaining=pos.Food;
+  foodS = foodRemaining;
 }
 
 function showError(err){
     console.log(err);
+}
+
+function addFood(){
+  if(foodS<20)
+  {
+    dog.addImage(happyDog);
+    c=20;
+
+    // writeStock(foodS);
+    foodS++;
+    foodStock.update({
+    Food : foodS 
+  });
+  }
+}
+
+function feedFood(){
+    dog.addImage(happyDog);
+    c=20;
+
+    lastFed=hour();
+
+    writeStock(foodS);
+    foodStock.update({
+    Food : foodS 
+  });
+
+    database.ref('/').update({
+      FeedTime : lastFed
+    })
+    
 }
