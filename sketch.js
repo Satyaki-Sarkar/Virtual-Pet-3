@@ -66,7 +66,7 @@ function draw()
   }else  if(gameState==="END")
   {
     dog.addImage(dogImage);
-    if(keyCode===32){
+    if(keyWentDown("Space")){
       gameState="PLAY";
       foodS=20;
       dogFoodCounter="Food Remaining";
