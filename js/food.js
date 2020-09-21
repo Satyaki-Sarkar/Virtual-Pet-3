@@ -5,19 +5,19 @@ class Food {
         var foodStock,lastFed;
     }
 
-    getFoodStock()
+    bedRoom()
     {
-
+        background(bedRoomImage,550,500);
     }
 
-    updateFoodStock()
+    garden()
     {
-
+        background(gardenImage,550,500);
     }
 
-    deductFood()
+    washRoom()
     {
-
+        background(washRoomImage,550,500);
     }
 
     display()
