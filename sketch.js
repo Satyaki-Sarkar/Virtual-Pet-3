@@ -43,6 +43,12 @@ function setup()
 
   dogFoodCounter="Food Remaining";
 
+    feedThePetButton = createButton('Click to feed the pet');
+    feedThePetButton.position(650,60);
+
+    addFoodButton = createButton('Click to add food for the pet');
+    addFoodButton.position(1050,60);
+
   
 }
 
@@ -60,12 +66,6 @@ function draw()
   if(gameState==="PLAY" || gameState==="Hungry")
   {
     dog.visible = true;
-
-    feedThePetButton = createButton('Click to feed the pet');
-    feedThePetButton.position(650,60);
-
-    addFoodButton = createButton('Click to add food for the pet');
-    addFoodButton.position(1050,60);
 
     addFoodButton.mousePressed(addFood);
     feedThePetButton.mousePressed(feedFood);
@@ -93,11 +93,12 @@ function draw()
 
   changingBackground();
 
-  if(gameState!=="Hungry"){
+  if(gameState!=="Hungry" && gameState!=="PLAY"){
     feedThePetButton.hide();
     addFoodButton.hide();
     dog.visible=false;
   }else{
+
     feedThePetButton.show();
     addFoodButton.show();
     dog.visible=true;
@@ -108,8 +109,10 @@ function draw()
     textSize(20);
     fill("Black");
     if(dogFoodCounter==="Food Remaining"){
-      if(lastFed>=12){
+      if(lastFed>12){
         text("Last Feed : "+ lastFed%12+ " PM",20,20);
+      }else if(lastFed===12){
+        text("Last Feed : "+ lastFed+" PM",20,20);
       }else if(lastFed===0){
         text("Last Feed : 12 AM",20,20);
       }else{
